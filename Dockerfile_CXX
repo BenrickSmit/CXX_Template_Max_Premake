@@ -1,0 +1,80 @@
+# Stage 1: Linux Build
+FROM fedora:latest AS linux_builder
+
+# Create the volume where all the application output will be stored
+VOLUME data
+
+# Install any necessary packages or dependencies here
+RUN dnf install -y \
+    doxygen \
+    make \
+    cmake \
+    boost-devel \
+    gtest-devel \
+    gcc \
+    gcc-c++ \
+    vim \
+    python3 \
+    libstdc++ \
+    gperftools-devel \
+    libXrandr-devel \
+    libXinerama-devel \
+    libXcursor-devel \
+    libXi-devel \
+    libXmu-devel \
+    libXi-devel \
+    libGL-devel \
+    mesa-libGL-devel        # Install OpenGL development package
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy your project files into the container
+COPY . /app
+
+# Build your application or perform any other necessary actions
+RUN chmod +x /app/scripts/generate_build_info.sh
+RUN chmod +x /app/scripts/generate.sh
+
+RUN chmod +x /app/scripts/run_all.sh
+RUN chmod +x /app/scripts/run_application.sh
+RUN chmod +x /app/scripts/run_profile.sh
+RUN chmod +x /app/scripts/run_tests.sh
+RUN chmod +x /app/scripts/init_documentation.sh
+
+# Create the build info that the Dockerfile will use
+RUN /app/scripts/generate_build_info.sh
+
+# Create the directories that will serve as persistant data
+RUN mkdir bin 
+RUN mkdir /app/bin
+RUN mkdir data 
+RUN mkdir /app/data
+
+# Copy and build C++ code
+# Simply append the following to the line if you're using MSVC: -T host=x64 -A x64
+#RUN cmake -S . -B build 
+#RUN cmake --build build --verbose --parallel ${nproc} --clean-first --config Release
+# Use Premake to create the project files
+# premake5 vs2019
+
+# This is a premake build process, as such, it will need to use the premake 
+# executable. On windows it's simple, you just look for the premake.exe and
+# specify your path. As such, you'll have something similar to this on windows
+
+# Note: you have to be in the directory where premake5.lua is
+# dependencies\premake-windows\premake5.exe vs2022
+
+
+# Run your application (replace this with your actual command)
+CMD ["bash","app/scripts/generate.sh"]
+#CMD ["bash","app/scripts/generate_build_info.sh"]
+#CMD ["bash","app/scripts/run_all.sh"]
+#CMD ["bash","app/scripts/run_application.sh"]
+#CMD ["bash","app/scripts/run_profile.sh"]
+#CMD ["bash","app/scripts/run_tests.sh"]
+#CMD ["bash","app/scripts/init_documentation.sh"]
+
+
+# Stage 2: Windows Build
+# TODO: Implement a windows build

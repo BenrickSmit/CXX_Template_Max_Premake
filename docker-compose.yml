@@ -1,0 +1,22 @@
+version: '3.7'
+services:
+  cpp:
+    container_name: ${BUILD_CXX_APP_NAME}-container
+    image: ${BUILD_CXX_APP_NAME}-image
+    build:
+      context: .
+      dockerfile: Dockerfile_CXX              # The main Dockerfile to be used with this application
+    volumes:
+      - build_info:/app/build_info            # Named volume for persistence inside the container
+      - ./build_info:/app/build_info          # Volume mapping to the host
+      - data:/app/data                        # Named volume for persistence inside the container
+      - ./data:/app/data                      # Volume mapping to the host
+      - bin:/app/bin                          # Named volume for persistence inside the container
+      - ./bin:/app/bin                        # Volume mapping to the host
+    env_file:
+      - .env                                  # Filled with environmental variables useful later on
+
+volumes:
+  data: ~                                     # Create a named volume 'data' for persistence
+  build_info: ~                               # Create a named volume 'build_info' for persistence
+  bin: ~                                      # Create a named volume 'bin' for persistence
